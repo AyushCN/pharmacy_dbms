@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ supplier_name }} Medicines - PharmaCare</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --primary-dark: #2980b9;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --success-color: #4CAF50;
+            --error-color: #F44336;
+            --warning-color: #FF9800;
+            --bg-color: #f5f7fa;
+            --card-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .logo span {
+            color: var(--primary-color);
+        }
+        
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: var(--transition);
+        }
+        
+        .back-btn:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .cart-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .cart-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .cart-count {
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            position: absolute;
+            top: -8px;
+            right: -8px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .page-title {
+            margin: 0;
+            color: var(--text-dark);
+        }
+        
+        .supplier-info {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+        
+        .medicines-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .medicine-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .medicine-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+        
+        .medicine-header {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .medicine-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0 0 5px 0;
+        }
+        
+        .medicine-id {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+        
+        .medicine-details {
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+        
+        .medicine-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .medicine-detail strong {
+            color: var(--text-dark);
+        }
+        
+        .price {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .stock-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        
+        .in-stock {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .low-stock {
+            background-color: #fff8e1;
+            color: #f57c00;
+        }
+        
+        .out-of-stock {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+        }
+        
+        .quantity-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+            background: white;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .quantity-btn:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .quantity-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .buy-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .buy-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .cart-btn {
+            background-color: #f5f5f5;
+            color: var(--text-dark);
+        }
+        
+        .cart-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .action-btn:disabled {
+            background-color: #e0e0e0;
+            color: #9e9e9e;
+            cursor: not-allowed;
+        }
+        
+        .action-btn .spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 5px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-30px);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .notification.success {
+            background-color: var(--success-color);
+        }
+        
+        .notification.error {
+            background-color: var(--error-color);
+        }
+        
+        .notification.warning {
+            background-color: var(--warning-color);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px;
+            }
+            
+            .container {
+                padding: 0 15px;
+            }
+            
+            .medicines-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+   </style>
+
+
+
+</head>
+<body>
+    <nav class="navbar">
+        <button class="back-btn" onclick="window.history.back()">
+            <i class="fas fa-arrow-left"></i> Back to Suppliers
+        </button>
+        <div class="logo">Pharma<span>Care</span></div>
+        <div class="nav-controls">
+            <a href="/cart" class="cart-btn">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count" id="cartCount">0</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">{{ supplier_name }} Medicines</h1>
+            <div class="supplier-info">
+                Showing {{ medicines|length }} available medicines
+            </div>
+        </div>
+
+        <div class="medicines-grid">
+            {% for medicine in medicines %}
+            <div class="medicine-card">
+                <div class="medicine-header">
+                    <h3 class="medicine-name">{{ medicine.name }}</h3>
+                    <div class="medicine-id">ID: {{ medicine.medicine_id }}</div>
+                </div>
+                <div class="medicine-details">
+                    <div class="medicine-detail">
+                        <span>Category:</span>
+                        <strong>{{ medicine.category or 'N/A' }}</strong>
+                    </div>
+                    <div class="medicine-detail">
+                        <span>Supplier:</span>
+                        <strong>{{ medicine.supplier_name }}</strong>
+                    </div>
+                    <div class="medicine-detail">
+                        <span>Expiry:</span>
+                        <strong>{{ medicine.expiry_date.strftime('%d %b %Y') }}</strong>
+                    </div>
+                </div>
+                <div class="price">₹{{ "%.2f"|format(medicine.price) }}</div>
+                {% if medicine.quantity_in_stock <= 0 %}
+                    <span class="stock-status out-of-stock">Out of Stock</span>
+                {% elif medicine.quantity_in_stock < 10 %}
+                    <span class="stock-status low-stock">Low Stock ({{ medicine.quantity_in_stock }} left)</span>
+                {% else %}
+                    <span class="stock-status in-stock">In Stock ({{ medicine.quantity_in_stock }})</span>
+                {% endif %}
+                <div class="quantity-control">
+                    <button class="quantity-btn" onclick="adjustQuantity('{{ medicine.medicine_id }}', -1)" {% if medicine.quantity_in_stock <= 0 %}disabled{% endif %}>
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <input type="number" id="quantity-{{ medicine.medicine_id }}" class="quantity-input" value="1" min="1" max="{{ medicine.quantity_in_stock }}" {% if medicine.quantity_in_stock <= 0 %}disabled{% endif %}>
+                    <button class="quantity-btn" onclick="adjustQuantity('{{ medicine.medicine_id }}', 1)" {% if medicine.quantity_in_stock <= 0 %}disabled{% endif %}>
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-btn buy-btn" onclick="buyNow('{{ medicine.medicine_id }}')" {% if medicine.quantity_in_stock <= 0 %}disabled{% endif %}>
+                        <i class="fas fa-bolt"></i> Buy Now
+                    </button>
+                    <button class="action-btn cart-btn" onclick="addToCart('{{ medicine.medicine_id }}')" {% if medicine.quantity_in_stock <= 0 %}disabled{% endif %}>
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartCount();
+        });
+
+        async function updateCartCount() {
+            try {
+                const response = await fetch('/api/cart/count');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('cartCount').textContent = data.count || 0;
+                }
+            } catch (error) {
+                console.error('Error fetching cart count:', error);
+            }
+        }
+
+        function adjustQuantity(medicineId, change) {
+            const input = document.getElementById(`quantity-${medicineId}`);
+            let newValue = parseInt(input.value) + change;
+            const max = parseInt(input.max);
+            newValue = Math.max(1, Math.min(newValue, max));
+            input.value = newValue;
+        }
+
+       async function buyNow(medicineId) {
+    const quantity = document.getElementById(`quantity-${medicineId}`).value;
+    // Redirect to the single buy page with medicine id and quantity as query params
+    window.location.href = `/buy_single/${medicineId}?quantity=${quantity}`;
+}
+
+
+        function showNotification(message, isSuccess) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${isSuccess ? 'success' : 'error'}`;
+            notification.innerHTML = `<i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.classList.add('show'), 10);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => document.body.removeChild(notification), 300);
+            }, 3000);
+        }
+
+// ...existing code...
+
+        async function addToCart(medicineId) {
+            const quantity = document.getElementById(`quantity-${medicineId}`).value;
+            const btn = document.querySelector(`button[onclick="addToCart('${medicineId}')"]`);
+            const originalContent = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner spinner"></i> Adding...';
+
+            try {
+                const response = await fetch('/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ medicine_id: medicineId, quantity: parseInt(quantity) })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showNotification(`Added ${quantity} item(s) to cart!`, true);
+                    updateCartCount();
+                } else {
+                    showNotification(data.message || 'Failed to add to cart.', false);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Failed to add to cart. Please try again.', false);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+            }
+        }
+
+// ...existing code...
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,148 @@
+-- Create the database
+CREATE DATABASE IF NOT EXISTS pharmacy_db;
+USE pharmacy_db;
+
+-- Create customer table
+CREATE TABLE IF NOT EXISTS customer (
+    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    phone VARCHAR(15) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    is_admin BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create supplier table
+CREATE TABLE IF NOT EXISTS supplier (
+    supplier_id VARCHAR(10) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    contact VARCHAR(15) NOT NULL,
+    address TEXT
+);
+
+-- Create medicine table
+CREATE TABLE IF NOT EXISTS medicine (
+    medicine_id VARCHAR(10) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    category VARCHAR(50),
+    price DECIMAL(10,2) NOT NULL,
+    expiry_date DATE NOT NULL,
+    quantity_in_stock INT NOT NULL,
+    c_id VARCHAR(10),
+    FOREIGN KEY (c_id) REFERENCES supplier(supplier_id)
+);
+
+-- Create purchases table
+CREATE TABLE IF NOT EXISTS purchases (
+    purchase_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    medicine_id VARCHAR(10) NOT NULL,
+    quantity INT NOT NULL,
+    total_price DECIMAL(10,2) NOT NULL,
+    purchase_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
+    FOREIGN KEY (medicine_id) REFERENCES medicine(medicine_id)
+);
+
+-- Create cart table
+CREATE TABLE IF NOT EXISTS cart (
+    cart_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customer(customer_id)
+);
+
+-- Create cart_items table
+CREATE TABLE IF NOT EXISTS cart_items (
+    cart_item_id INT AUTO_INCREMENT PRIMARY KEY,
+    cart_id INT NOT NULL,
+    medicine_id VARCHAR(10) NOT NULL,
+    quantity INT NOT NULL,
+    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (cart_id) REFERENCES cart(cart_id),
+    FOREIGN KEY (medicine_id) REFERENCES medicine(medicine_id)
+);
+
+-- Create an admin user
+INSERT INTO customer (name, email, phone, password, is_admin)
+VALUES (
+    'Admin', 
+    'admin@pharmacy.com', 
+    '1234567890', 
+    '$pbkdf2-sha256$29000$N2YMIWQsBWBMae09x1jrPQ$1t8iyB2A.WF/Z5JZv.lfCIhXXN33N23OSgQYThBYRf/', -- hash for 'admin123'
+    TRUE
+)
+ON DUPLICATE KEY UPDATE name=name;
+
+
+
+
+-- Insert suppliers into the supplier table
+INSERT INTO supplier (supplier_id, name, contact, address)
+VALUES
+    ('SUP001', 'Apollo', '9876543210', 'Apollo Street, Pharma City, ABC'),
+    ('SUP002', 'MedPlus', '1234567890', 'MedPlus Road, Health Town, XYZ'),
+    ('SUP003', 'Ayurveda', '5556667778', 'Ayurveda Lane, Wellness Park, DEF'),
+    ('SUP004', 'Sigma Medicals', '9988776655', 'Sigma Square, Medical District, GHI');
+
+
+
+
+-- Insert medicines into the medicine table
+INSERT INTO medicine (medicine_id, name, category, price, expiry_date, quantity_in_stock, c_id)
+VALUES
+    ('MED001', 'Paracetamol', 'Pain Reliever', 10.50, '2025-12-31', 100, 'SUP001'),
+    ('MED002', 'Ibuprofen', 'Pain Reliever', 15.75, '2026-06-15', 150, 'SUP001'),
+    ('MED003', 'Amoxicillin', 'Antibiotic', 25.00, '2027-03-25', 50, 'SUP002'),
+    ('MED004', 'Ciprofloxacin', 'Antibiotic', 20.50, '2026-11-10', 75, 'SUP002'),
+    ('MED005', 'Loratadine', 'Antihistamine', 8.00, '2025-08-22', 200, 'SUP003'),
+    ('MED006', 'Cetirizine', 'Antihistamine', 12.00, '2025-06-01', 120, 'SUP003'),
+    ('MED007', 'Omeprazole', 'Antacid', 18.00, '2026-12-05', 80, 'SUP004'),
+    ('MED008', 'Esomeprazole', 'Antacid', 22.00, '2026-08-15', 60, 'SUP004'),
+    ('MED009', 'Metformin', 'Diabetic Medicine', 30.00, '2027-02-28', 100, 'SUP001'),
+    ('MED010', 'Amlodipine', 'Blood Pressure', 12.50, '2027-04-30', 150, 'SUP001'),
+    ('MED011', 'Atorvastatin', 'Cholesterol', 40.00, '2026-10-01', 90, 'SUP002'),
+    ('MED012', 'Simvastatin', 'Cholesterol', 35.00, '2027-05-10', 80, 'SUP002'),
+    ('MED013', 'Insulin', 'Diabetic Medicine', 60.00, '2027-06-01', 200, 'SUP003'),
+    ('MED014', 'Lisinopril', 'Blood Pressure', 25.00, '2026-07-01', 120, 'SUP003'),
+    ('MED015', 'Diphenhydramine', 'Antihistamine', 9.50, '2025-05-10', 150, 'SUP004'),
+    ('MED016', 'Gabapentin', 'Neurological', 45.00, '2027-01-20', 70, 'SUP004'),
+    ('MED017', 'Hydrochlorothiazide', 'Diuretic', 10.25, '2026-09-15', 130, 'SUP001'),
+    ('MED018', 'Clopidogrel', 'Blood Thinner', 28.00, '2026-12-01', 100, 'SUP002'),
+    ('MED019', 'Captopril', 'Blood Pressure', 15.00, '2027-03-10', 90, 'SUP003'),
+    ('MED020', 'Montelukast', 'Asthma', 20.00, '2026-05-25', 150, 'SUP004');
+
+-- Add 5 more medicines for each supplier
+
+-- SUP001 (Apollo)
+INSERT INTO medicine (medicine_id, name, category, price, expiry_date, quantity_in_stock, c_id) VALUES
+('MED021', 'Dolo 650', 'Pain Reliever', 12.00, '2026-12-31', 180, 'SUP001'),
+('MED022', 'Azithromycin', 'Antibiotic', 32.00, '2027-08-15', 90, 'SUP001'),
+('MED023', 'Pantoprazole', 'Antacid', 16.00, '2027-03-20', 110, 'SUP001'),
+('MED024', 'Losartan', 'Blood Pressure', 22.00, '2027-11-05', 100, 'SUP001'),
+('MED025', 'Gliclazide', 'Diabetic Medicine', 27.00, '2026-10-10', 80, 'SUP001');
+
+-- SUP002 (MedPlus)
+INSERT INTO medicine (medicine_id, name, category, price, expiry_date, quantity_in_stock, c_id) VALUES
+('MED026', 'Ranitidine', 'Antacid', 14.00, '2026-09-30', 120, 'SUP002'),
+('MED027', 'Doxycycline', 'Antibiotic', 38.00, '2027-02-18', 60, 'SUP002'),
+('MED028', 'Metronidazole', 'Antibiotic', 18.00, '2026-12-12', 100, 'SUP002'),
+('MED029', 'Aspirin', 'Blood Thinner', 11.00, '2027-07-07', 140, 'SUP002'),
+('MED030', 'Pioglitazone', 'Diabetic Medicine', 29.00, '2027-05-25', 70, 'SUP002');
+
+-- SUP003 (Ayurveda)
+INSERT INTO medicine (medicine_id, name, category, price, expiry_date, quantity_in_stock, c_id) VALUES
+('MED031', 'Ashwagandha', 'Ayurvedic', 50.00, '2027-09-15', 60, 'SUP003'),
+('MED032', 'Triphala', 'Ayurvedic', 35.00, '2026-11-30', 80, 'SUP003'),
+('MED033', 'Giloy', 'Ayurvedic', 40.00, '2027-03-05', 90, 'SUP003'),
+('MED034', 'Neem Tablets', 'Ayurvedic', 22.00, '2026-08-20', 100, 'SUP003'),
+('MED035', 'Shatavari', 'Ayurvedic', 55.00, '2027-12-10', 50, 'SUP003');
+
+-- SUP004 (Sigma Medicals)
+INSERT INTO medicine (medicine_id, name, category, price, expiry_date, quantity_in_stock, c_id) VALUES
+('MED036', 'Rabeprazole', 'Antacid', 19.00, '2027-04-18', 85, 'SUP004'),
+('MED037', 'Levocetirizine', 'Antihistamine', 13.00, '2026-10-22', 110, 'SUP004'),
+('MED038', 'Rosuvastatin', 'Cholesterol', 42.00, '2027-06-30', 75, 'SUP004'),
+('MED039', 'Atenolol', 'Blood Pressure', 17.00, '2026-12-25', 95, 'SUP004'),
+('MED040', 'Baclofen', 'Muscle Relaxant', 28.00, '2027-08-12', 60, 'SUP004');

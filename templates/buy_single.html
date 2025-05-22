@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Buy {{ medicine.name }} - PharmaCare</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Copy the CSS from your buy.html here for consistent styling */
+                :root {
+            --primary-color: #3498db;
+            --primary-dark: #2980b9;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --success-color: #4CAF50;
+            --error-color: #F44336;
+            --border-color: #e0e0e0;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: var(--text-dark);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: white;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .checkout-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+            transition: var(--transition);
+        }
+
+        .step.active .step-number {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .step-title {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .step.active .step-title {
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .step-line {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #e0e0e0;
+            z-index: 0;
+        }
+
+        .checkout-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .cart-items {
+            margin-bottom: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .item-image {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            padding: 5px;
+        }
+
+        .item-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .item-price {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .item-quantity {
+            color: var(--text-light);
+        }
+
+        .order-summary {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .summary-total {
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .address-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .payment-method {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .payment-method:hover {
+            border-color: var(--primary-color);
+        }
+
+        .payment-method.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+
+        .payment-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            color: var(--primary-color);
+        }
+
+        .payment-details {
+            flex-grow: 1;
+        }
+
+        .payment-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .payment-description {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: #f5f5f5;
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .confirmation {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .confirmation-icon {
+            font-size: 60px;
+            color: var(--success-color);
+            margin-bottom: 20px;
+        }
+
+        .confirmation-title {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .confirmation-message {
+            color: var(--text-light);
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .order-details {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        @media (max-width: 768px) {
+            .address-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .payment-methods {
+                gap: 10px;
+            }
+            
+            .action-buttons {
+                flex-direction: column-reverse;
+                gap: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <button class="back-btn" onclick="window.history.back()">
+            <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <div class="logo">Pharma<span>Care</span></div>
+    </nav>
+
+    <div class="container">
+      
+
+        <!-- Step 1: Review Order -->
+        <div class="checkout-section" id="review-section">
+            <h2 class="section-title">Review Your Order</h2>
+            <div class="cart-items">
+                <div class="cart-item">
+                    <div class="item-info">
+                        <div>
+                            <div class="item-name">{{ medicine.name }}</div>
+                            <div class="item-price">₹{{ "%.2f"|format(medicine.price) }}</div>
+                            <div class="item-supplier">Supplier: {{ medicine.supplier_name }}</div>
+                        </div>
+                    </div>
+                    <div class="item-quantity">Qty: {{ quantity }}</div>
+                </div>
+            </div>
+            <div class="order-summary">
+                <div class="summary-row">
+                    <div>Total</div>
+                    <div>₹{{ "%.2f"|format(order_total) }}</div>
+                </div>
+                <div class="summary-total">
+                    Total: ₹{{ "%.2f"|format(order_total) }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Shipping -->
+        <div class="checkout-section" id="shipping-section">
+            <h2 class="section-title">Shipping Information</h2>
+            <div class="form-group">
+                <label class="form-label" for="street-address">Street Address</label>
+                <input type="text" id="street-address" class="form-input" placeholder="Enter your street address" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="city">City</label>
+                <input type="text" id="city" class="form-input" placeholder="Enter your city" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="state">State</label>
+                <input type="text" id="state" class="form-input" placeholder="Enter your state" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="zip-code">Zip Code</label>
+                <input type="text" id="zip-code" class="form-input" placeholder="Enter your zip code" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="country">Country</label>
+                <input type="text" id="country" class="form-input" placeholder="Enter your country" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="phone">Phone Number</label>
+                <input type="tel" id="phone" class="form-input" placeholder="Enter your phone number (optional)">
+            </div>
+        </div>
+
+        <!-- Step 3: Payment -->
+        <div class="checkout-section" id="payment-section">
+            <h2 class="section-title">Payment Information</h2>
+            <div class="payment-methods">
+                <div class="payment-method" onclick="selectPaymentMethod(this)">
+                    <div class="payment-icon"><i class="fas fa-credit-card"></i></div>
+                    <div class="payment-details">
+                        <div class="payment-title">Credit Card</div>
+                        <div class="payment-description">Pay with your credit card.</div>
+                    </div>
+                </div>
+                <!-- Add more payment methods as needed -->
+            </div>
+        </div>
+
+        <!-- Step 4: Confirmation -->
+        <div class="checkout-section" id="confirmation-section">
+            <div class="confirmation">
+                <div class="confirmation-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="confirmation-title">Order Confirmed!</div>
+                <div class="confirmation-message">Thank you for your purchase! Your order is being processed and will be shipped soon.</div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-secondary" onclick="goBack()">Back</button>
+            <button class="btn btn-primary" id="next-btn" onclick="proceedToNextStep()">Next</button>
+           <button class="btn btn-success" id="confirm-btn" style="display:none;" onclick="confirmSingleOrder()">Confirm</button>
+        </div>
+    </div>
+
+<script>
+    let currentStep = 1;
+
+    function selectPaymentMethod(element) {
+        document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+        validateStep3();
+    }
+
+    function proceedToNextStep() {
+        if (currentStep === 1) {
+            document.getElementById('review-section').style.display = 'none';
+            document.getElementById('shipping-section').style.display = 'block';
+            currentStep = 2;
+        } else if (currentStep === 2) {
+            if (!validateShipping()) {
+                alert('Please fill all shipping fields.');
+                return;
+            }
+            document.getElementById('shipping-section').style.display = 'none';
+            document.getElementById('payment-section').style.display = 'block';
+            currentStep = 3;
+        } else if (currentStep === 3) {
+            if (!validateStep3()) {
+                alert('Please select a payment method.');
+                return;
+            }
+            document.getElementById('payment-section').style.display = 'none';
+            document.getElementById('confirmation-section').style.display = 'block';
+            document.querySelector('.action-buttons').style.display = 'none';
+        }
+        updateButtons();
+    }
+
+    function goBack() {
+        if (currentStep === 2) {
+            document.getElementById('shipping-section').style.display = 'none';
+            document.getElementById('review-section').style.display = 'block';
+            currentStep = 1;
+        } else if (currentStep === 3) {
+            document.getElementById('payment-section').style.display = 'none';
+            document.getElementById('shipping-section').style.display = 'block';
+            currentStep = 2;
+        }
+        updateButtons();
+    }
+
+    function validateShipping() {
+        const fields = ['street-address', 'city', 'state', 'zip-code', 'country'];
+        for (let id of fields) {
+            if (!document.getElementById(id).value.trim()) return false;
+        }
+        return true;
+    }
+
+    function validateStep3() {
+        return document.querySelector('.payment-method.selected') !== null;
+    }
+
+    function updateButtons() {
+        document.getElementById('next-btn').style.display = (currentStep < 3) ? '' : 'none';
+        document.getElementById('confirm-btn').style.display = (currentStep === 3) ? '' : 'none';
+    }
+
+    // Initial state
+    document.getElementById('shipping-section').style.display = 'none';
+    document.getElementById('payment-section').style.display = 'none';
+    document.getElementById('confirmation-section').style.display = 'none';
+    updateButtons();
+    
+   function confirmSingleOrder() {
+    const shipping = {
+        street: document.getElementById('street-address').value,
+        city: document.getElementById('city').value,
+        state: document.getElementById('state').value,
+        zip: document.getElementById('zip-code').value,
+        country: document.getElementById('country').value,
+        phone: document.getElementById('phone').value
+    };
+    const paymentMethod = document.querySelector('.payment-method.selected .payment-title').innerText;
+
+    fetch('/confirm_single_order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            medicine_id: "{{ medicine.medicine_id }}",
+            quantity: {{ quantity }},
+            shipping,
+            paymentMethod
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('payment-section').style.display = 'none';
+            document.getElementById('confirmation-section').style.display = 'block';
+            document.querySelector('.action-buttons').style.display = 'none';
+        } else {
+            alert(data.message || 'Order could not be confirmed.');
+        }
+    });
+}
+</script>
+</body>
+</html>

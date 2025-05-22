@@ -1,0 +1,116 @@
+<nav class="navbar">
+    <button class="back-btn" onclick="window.history.back()">
+        <i class="fas fa-arrow-left"></i> Back
+    </button>
+    <div class="logo">Pharma<span>Care</span></div>
+    
+    <div class="nav-controls">
+        <a href="{{ url_for('view_cart') }}" class="cart-btn" id="cart-button">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-count" id="cart-count">
+                {% if 'cart' in session and session.cart %}
+                    {{ session.cart.values()|sum(attribute='quantity') }}
+                {% else %}
+                    0
+                {% endif %}
+            </span>
+        </a>
+        <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+</nav>
+
+<script>
+    // Function to update cart count
+    async function updateCartCount() {
+        try {
+            const response = await fetch('/api/cart/count');
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('cart-count').textContent = data.count || 0;
+            }
+        } catch (error) {
+            console.error('Error updating cart count:', error);
+        }
+    }
+
+    // Function to handle logout
+    async function logout() {
+        try {
+            const response = await fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            if (response.ok) {
+                window.location.href = '/';
+            }
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    }
+
+    // Initialize cart count on page load
+    document.addEventListener('DOMContentLoaded', updateCartCount);
+
+    // Set up periodic cart count refresh (every 30 seconds)
+    setInterval(updateCartCount, 30000);
+</script>
+
+<style>
+    .nav-controls {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .cart-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background-color: #3498db;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .cart-btn:hover {
+        background-color: #2980b9;
+        transform: translateY(-2px);
+    }
+    
+    .cart-count {
+        background-color: #e74c3c;
+        color: white;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+    }
+    
+    .logout-btn {
+        background: none;
+        border: none;
+        color: #2c3e50;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        padding: 8px 12px;
+        border-radius: 5px;
+    }
+    
+    .logout-btn:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+        color: #3498db;
+    }
+</style>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaCare - Pharmacy Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* CSS styles will go here */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .logo span {
+            color: #3498db;
+        }
+
+        .login-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .hero {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            max-width: 700px;
+            margin-bottom: 30px;
+        }
+
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 250px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-card i {
+            font-size: 2.5rem;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .feature-card p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 400px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+            animation: modalopen 0.5s;
+        }
+
+        @keyframes modalopen {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            color: #7f8c8d;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: #3498db;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 14px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+        /* Add to your existing CSS */
+        .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 5px;
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-30px);
+    transition: all 0.3s ease;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.notification.success {
+    background-color: #4CAF50;
+}
+
+.notification.error {
+    background-color: #F44336;
+}
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">Pharma<span>Care</span></div>
+        <button class="login-btn" id="loginBtn">Login</button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Welcome to PharmaCare</h1>
+        <p>Streamline your pharmacy operations with our comprehensive management system. Manage inventory, prescriptions, and customer data with ease.</p>
+        
+        <div class="features">
+            <div class="feature-card">
+                <i class="fas fa-pills"></i>
+                <h3>Inventory Management</h3>
+                <p>Track medicine stock levels, expiry dates, and supplier information.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-file-prescription"></i>
+                <h3>Prescription Tracking</h3>
+                <p>Manage patient prescriptions and medication history efficiently.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-chart-line"></i>
+                <h3>Sales Analytics</h3>
+                <p>Generate reports and analyze sales performance.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="tab-container">
+                <button class="tab active" data-tab="login">Login</button>
+                <button class="tab" data-tab="signup">Create Account</button>
+            </div>
+            
+<div id="login" class="tab-content active">
+    <form id="loginForm">
+        <div class="form-group">
+            <label for="loginIdentifier">Email or Phone</label>
+            <input type="text" id="loginIdentifier" required>
+        </div>
+        <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword">
+        </div>
+        <button type="submit" class="submit-btn">Login</button>
+    </form>
+</div>
+            
+            <div id="signup" class="tab-content">
+                <form id="signupForm">
+    <div class="form-group">
+        <label for="signupName">Full Name</label>
+        <input type="text" id="signupName" required>
+    </div>
+    <div class="form-group">
+        <label for="signupEmail">Email</label>
+        <input type="email" id="signupEmail" required>
+    </div>
+    <div class="form-group">
+        <label for="signupPhone">Phone</label>
+        <input type="text" id="signupPhone" required>
+    </div>
+    <div class="form-group">
+        <label for="signupPassword">Password</label>
+        <input type="password" id="signupPassword" required>
+    </div>
+    <div class="form-group">
+        <label for="signupConfirm">Confirm Password</label>
+        <input type="password" id="signupConfirm" required>
+    </div>
+    <button type="submit" class="submit-btn">Create Account</button>
+</form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2023 PharmaCare Pharmacy Management System. All rights reserved.</p>
+    </footer>
+<script>
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // DOM Elements
+        const loginBtn = document.getElementById('loginBtn');
+        const modal = document.getElementById('loginModal');
+        const closeBtn = document.querySelector('.close');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+
+        // Debugging: Check if elements exist
+        console.log('Login button:', loginBtn);
+        console.log('Modal element:', modal);
+        console.log('Close button:', closeBtn);
+
+        // Open modal when login button is clicked
+        if (loginBtn) {
+            loginBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                modal.style.display = 'block';
+                console.log('Modal should be visible now');
+            });
+        }
+
+        // Close modal when X is clicked
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                modal.style.display = 'none';
+            });
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Tab switching functionality
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabId = tab.getAttribute('data-tab');
+                console.log(`Tab clicked: ${tabId}`);
+                
+                // Update active tab
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Update active content
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === tabId) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        // Notification function
+        function showNotification(message, isSuccess) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${isSuccess ? 'success' : 'error'}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Login form submission
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const identifier = document.getElementById('loginIdentifier').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email: identifier.includes('@') ? identifier : null,
+                        phone: identifier.includes('@') ? null : identifier,
+                        password 
+                    }),
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(data.message, true);
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                        window.location.href = data.is_admin ? 
+                            '/admin_dashboard' : '/customer_dashboard';
+                    }, 1500);
+                } else {
+                    showNotification(data.message, false);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Login failed. Please try again.', false);
+            }
+        });
+
+        // Signup form submission
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            // ...existing code...
+const name = document.getElementById('signupName').value;
+const email = document.getElementById('signupEmail').value;
+const phone = document.getElementById('signupPhone').value; // Add this line
+const password = document.getElementById('signupPassword').value.replace(/\s/g, '');
+const confirm = document.getElementById('signupConfirm').value.replace(/\s/g, '');
+
+if (password !== confirm) {
+    showNotification('Passwords do not match!', false);
+    return;
+}
+
+const response = await fetch('/signup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+        name, 
+        email, 
+        phone, // Add this line
+        password,
+        confirm_password: confirm
+    }),
+});
+// ...existing code...
+// ...existing code...
+            
+            try {
+                
+
+// ...existing code...;
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(data.message, true);
+                    tabs[0].click();
+                    signupForm.reset();
+                } else {
+                    showNotification(data.message, false);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Signup failed. Please try again.', false);
+            }
+        });
+
+        // Check if user is already logged in
+        async function checkSession() {
+            try {
+                const response = await fetch('/check_session');
+                const data = await response.json();
+                
+                if (data.logged_in) {
+                    window.location.href = data.is_admin ? 
+                        '/admin_dashboard.html' : '/customer_dashboard.html';
+                }
+            } catch (error) {
+                console.error('Session check failed:', error);
+            }
+        }
+
+        // Run session check when page loads
+        checkSession();
+    });
+</script>
+</body>
+</html>
